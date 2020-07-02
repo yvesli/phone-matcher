@@ -1,0 +1,1 @@
+packageSearchIndex = [{"l":"All Packages","url":"allpackages-index.html"},{"l":"yifu"},{"l":"yifu.csvReader"},{"l":"yifu.csvWriter"},{"l":"yifu.matcher"},{"l":"yifu.tools"},{"l":"yifu.tools.tuple"}]
