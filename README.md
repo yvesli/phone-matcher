@@ -2,7 +2,7 @@
 
 > Simple matcher app that matches phone number with name
 
-** Get JAR file **
+## Get JAR file
 `curl -o phone-number-matcher.jar https://github.com/yvesli/phone-matcher/tree/master/out/artifacts/phone_number_matcher_jar`
 
 ## How to use
