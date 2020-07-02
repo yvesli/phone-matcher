@@ -1,5 +1,6 @@
 package yifu.tools.tuple;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
@@ -27,5 +28,17 @@ public class Tuple implements Iterable<String> {
     @Override
     public Iterator<String> iterator() {
         return Arrays.stream(strings).iterator();
+    }
+
+    public List<String> toList() {
+        return new ArrayList<>(Arrays.asList(strings));
+    }
+
+    public String toString() {
+        return Arrays.toString(strings);
+    }
+
+    public String toCsvFormat() {
+        return String.join(",", strings);
     }
 }

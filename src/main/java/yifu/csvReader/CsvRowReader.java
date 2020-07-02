@@ -53,6 +53,11 @@ public class CsvRowReader implements CsvReader<String> {
      */
     @Override
     public void reset() throws FileNotFoundException {
+        try {
+            csvReader.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         csvReader = new BufferedReader(new FileReader(path));
         loadNextLine();
     }

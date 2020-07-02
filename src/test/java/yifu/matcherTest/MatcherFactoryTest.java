@@ -1,4 +1,4 @@
-package matcher;
+package yifu.matcherTest;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -6,20 +6,16 @@ import yifu.matcher.Matcher;
 import yifu.matcher.MatcherFactory;
 import yifu.tools.tuple.Tuple;
 
-import java.io.FileNotFoundException;
 import java.util.Objects;
 
-public class InMemoryMatcherTest {
-
+public class MatcherFactoryTest {
     @Test
-    void completeInMemeoryTest() {
-        // find path to each files
+    void testMatcherFactory() {
+
         String namePath = Objects.requireNonNull(getClass().getClassLoader().getResource("Name.csv")).getPath();
         String phonePath = Objects.requireNonNull(getClass().getClassLoader().getResource("Phone.csv")).getPath();
 
-        // initialize matcher
-        Matcher matcher = MatcherFactory.createSimpleMatcher(namePath, phonePath);
-        matcher.match();
+        Matcher matcher = MatcherFactory.createMatcher(namePath, phonePath);
 
         // test titles of output file
         Tuple titles = matcher.getTitles();

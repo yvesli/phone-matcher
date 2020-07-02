@@ -6,26 +6,25 @@ import yifu.tools.Parsers;
 import yifu.tools.tuple.Tuple;
 
 import java.io.FileNotFoundException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 
 
 /**
+ * HashMap implementation of matcher
+ * Low time complexity but high memory usage (space: theta(phone), time: theta(phone + name))
  * Use this class only when both input files are relatively small, can be contained in memory
  */
-public class InMemoryMatcher implements Matcher {
+public class SimpleMatcher implements Matcher {
 
     // == private fields ==
     private CsvReader<String> nameFileReader;
     private CsvReader<String> phoneFileReader;
 
     // key: name_id, value: list of phone numbers
-    private final HashMap<String, List<String>> idToPhone = new HashMap<>();
+    private final Map<String, List<String>> idToPhone = new HashMap<>();
 
     // key: phone_column_titles, value: corresponding column index number
-    private final HashMap<String, Integer> phoneIndexMap = new HashMap<>();
+    private final Map<String, Integer> phoneIndexMap = new HashMap<>();
 
     private Tuple nameColTitles;
 
@@ -45,7 +44,7 @@ public class InMemoryMatcher implements Matcher {
      * @param nameFilePath path to file Name.csv
      * @param phoneFilePath path to file phone.csv
      */
-    public InMemoryMatcher(String nameFilePath, String phoneFilePath) {
+    public SimpleMatcher(String nameFilePath, String phoneFilePath) {
         try {
             // load both files to their csvReader
             nameFileReader = new CsvRowReader(nameFilePath);
@@ -65,7 +64,10 @@ public class InMemoryMatcher implements Matcher {
      */
     @Override
     public Tuple getTitles() {
-        assertMatch();
+        if (!haveMatched) {
+            match();
+            nextEntry = getNextEntry();
+        }
         List<String> titles = new ArrayList<>();
         for (String title: nameColTitles) {
             titles.add(title);
@@ -84,7 +86,10 @@ public class InMemoryMatcher implements Matcher {
      */
     @Override
     public boolean hasNext() {
-        assertMatch();
+        if (!haveMatched) {
+            match();
+            nextEntry = getNextEntry();
+        }
         return nextEntry != null;
     }
 
@@ -94,21 +99,31 @@ public class InMemoryMatcher implements Matcher {
      */
     @Override
     public Tuple next() {
-        assertMatch();
+        if (!haveMatched) {
+            match();
+            nextEntry = getNextEntry();
+        }
         Tuple currentTuple = nextEntry;
         nextEntry = getNextEntry();
         return currentTuple;
     }
 
-    /**
-     * Initiate and run matching
-     */
-    @Override
-    public void match() {
+    // run only once
+    private void match() {
+        if (haveMatched) {
+            return;
+        }
+        haveMatched = true;
+
+        // exhaustively iterate through phone.csv
         while(phoneFileReader.hasNext()) {
+
+            // parse one phone row and get its name_id and phone number
             Tuple row = Parsers.parseLine(phoneFileReader.next());
             String id = row.getNthValue(phoneIndexMap.get("name_id"));
             String phone = row.getNthValue(phoneIndexMap.get("phone"));
+
+            // add phone number to corresponding name_id in map
             if (idToPhone.containsKey(id)) {
                 List<String> phoneList = idToPhone.get(id);
                 maxPhoneNumSize = Math.max(maxPhoneNumSize, phoneList.size() + 1);
@@ -119,13 +134,8 @@ public class InMemoryMatcher implements Matcher {
                 idToPhone.put(id, phones);
             }
         }
-        nextEntry = getNextEntry();
-        haveMatched = true;
     }
 
-    private void assertMatch() {
-        assert haveMatched : "Call match first to run";
-    }
 
     private void loadTitles() {
         // load titles of the name and store their column index in HashMap
@@ -144,9 +154,6 @@ public class InMemoryMatcher implements Matcher {
         }
     }
 
-    /**
-     *  Organize column number into hashMap
-     */
     private void getNameIdColNum(String titleRow) {
         Tuple nameTitles = Parsers.parseLine(titleRow);
         for (int i = 0; i < nameTitles.size(); i++) {
@@ -157,10 +164,17 @@ public class InMemoryMatcher implements Matcher {
         }
     }
 
+    // Iterate through name file to get the next entry of output
     private Tuple getNextEntry() {
+
+        // while loop to pass names without phone number
         while (nameFileReader.hasNext()) {
+
+            // parse next line in name.csv
             Tuple nameRow = Parsers.parseLine(nameFileReader.next());
             String id = nameRow.getNthValue(nameIdColNum);
+
+            // generate corresponding tuple
             if (idToPhone.containsKey(id)) {
                 List<String> phoneList = idToPhone.get(id);
                 List<String> trailingEmptySpace = Collections.nCopies(maxPhoneNumSize - phoneList.size(), "");

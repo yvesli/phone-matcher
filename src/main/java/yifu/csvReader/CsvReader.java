@@ -6,8 +6,8 @@ import java.util.Iterator;
 /**
  * Interface that defines general CsvReader format
  * extends Iterator interface
- * @param <T>
+ * @param <String> line of csv file
  */
-public interface CsvReader<T> extends Iterator<T> {
+public interface CsvReader<String> extends Iterator<String> {
     void reset() throws FileNotFoundException;
 }

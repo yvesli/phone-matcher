@@ -1,3 +1,5 @@
 .idea/
 phone-number-matcher.iml
 target/
+out/
+docs/
