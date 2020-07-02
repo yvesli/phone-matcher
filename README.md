@@ -17,4 +17,4 @@ In Bash terminal `java -jar phone-number-matcher.jar ${name csv file} ${phone cs
 - Low performance when file size larger than 2GB but low in memory consuming
 
 ## Documentation
-- Go to <a href="https://github.com/yvesli/phone-matcher/blob/master/docs/index.html">Java Docs</a>
+- Download <a href="https://github.com/yvesli/phone-matcher/tree/master/docs" download>Java Docs</a>
